@@ -40,7 +40,7 @@ jobs:
     - id: get-version
       run: |
         ref="${{ github.ref }}"
-        echo "::set-output name=version::${ref:1}"
+        echo "::set-output name=version::${ref:11}"
 
     - name: Upload Release Asset
       id: upload-release-asset
