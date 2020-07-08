@@ -14,9 +14,9 @@ include (
         'spark-common',
         'spark-bukkit',
         'spark-bungeecord',
-        'spark-velocity',
+//        'spark-velocity',
         'spark-sponge',
-        'spark-forge',
-        'spark-fabric',
+//        'spark-forge',
+//        'spark-fabric',
         'spark-universal'
 )

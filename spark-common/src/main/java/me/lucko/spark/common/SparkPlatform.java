@@ -61,11 +61,13 @@ import java.util.stream.Collectors;
 public class SparkPlatform {
 
     /** The URL of the viewer frontend */
-    public static final String VIEWER_URL = "https://spark.lucko.me/#";
+    public static final String VIEWER_URL = System.getProperty("me.lucko.spark.viewer-url", "https://spark.lucko.me/#");
+    public static final String BYTEBIN_URL = System.getProperty("me.lucko.spark.bytebin-url", "https://bytebin.lucko.me");
+
     /** The shared okhttp client */
     private static final OkHttpClient OK_HTTP_CLIENT = new OkHttpClient();
     /** The bytebin instance used by the platform */
-    public static final BytebinClient BYTEBIN_CLIENT = new BytebinClient(OK_HTTP_CLIENT, "https://bytebin.lucko.me/", "spark-plugin");
+    public static final BytebinClient BYTEBIN_CLIENT = new BytebinClient(OK_HTTP_CLIENT, BYTEBIN_URL, "spark-plugin");
 
     private final SparkPlugin plugin;
     private final List<CommandModule> commandModules;
