@@ -1,6 +1,6 @@
 allprojects {
     group = 'me.lucko'
-    version = '1.4-SNAPSHOT-anubis-0.0.1'
+    version = '1.4-SNAPSHOT'
 
     configurations {
         compileClasspath // Fabric-loom needs this for remap jar for some reason
@@ -32,7 +32,7 @@ subprojects {
     }
 
     ext {
-        pluginVersion = '1.4.2'
+        pluginVersion = '1.4.2-auqkwa-0.0.1'
         pluginDescription = 'spark is a performance profiling plugin based on sk89q\'s WarmRoast profiler'
     }
 
