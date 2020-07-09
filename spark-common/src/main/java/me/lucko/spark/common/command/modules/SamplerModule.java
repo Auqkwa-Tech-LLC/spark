@@ -28,6 +28,7 @@ import me.lucko.spark.common.command.CommandModule;
 import me.lucko.spark.common.command.CommandResponseHandler;
 import me.lucko.spark.common.command.tabcomplete.CompletionSupplier;
 import me.lucko.spark.common.command.tabcomplete.TabCompleter;
+import me.lucko.spark.common.grafana.GrafanaClient;
 import me.lucko.spark.common.sampler.Sampler;
 import me.lucko.spark.common.sampler.SamplerBuilder;
 import me.lucko.spark.common.sampler.ThreadDumper;
@@ -278,6 +279,10 @@ public class SamplerModule implements CommandModule {
                         .clickEvent(ClickEvent.openUrl(url))
                         .build()
                 );
+
+                if (SparkPlatform.GRAFANA_CLIENT != null) {
+                    SparkPlatform.GRAFANA_CLIENT.updateAnnotation(sampler.getAnnotationId(), url, sampler.getEndTime());
+                }
 
                 platform.getActivityLog().addToLog(Activity.urlActivity(resp.sender(), System.currentTimeMillis(), "Sampler", url));
             } catch (IOException e) {

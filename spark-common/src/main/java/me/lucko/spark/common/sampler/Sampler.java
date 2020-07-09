@@ -22,6 +22,7 @@
 package me.lucko.spark.common.sampler;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import me.lucko.spark.common.SparkPlatform;
 import me.lucko.spark.common.command.sender.CommandSender;
 import me.lucko.spark.common.platform.PlatformInfo;
 import me.lucko.spark.common.sampler.aggregator.DataAggregator;
@@ -80,8 +81,10 @@ public class Sampler implements Runnable {
     /** The time when sampling first began */
     private long startTime = -1;
     /** The unix timestamp (in millis) when this sampler should automatically complete.*/
-    private final long endTime; // -1 for nothing
-    
+    private long endTime; // -1 for nothing
+
+    private int annotationId;
+
     public Sampler(int interval, ThreadDumper threadDumper, ThreadGrouper threadGrouper, long endTime, boolean ignoreSleeping, boolean ignoreNative) {
         this.threadDumper = threadDumper;
         this.dataAggregator = new SimpleDataAggregator(this.workerPool, threadGrouper, interval, ignoreSleeping, ignoreNative);
@@ -101,6 +104,15 @@ public class Sampler implements Runnable {
      */
     public void start() {
         this.startTime = System.currentTimeMillis();
+        if (SparkPlatform.GRAFANA_CLIENT != null) {
+            workerPool.execute(() -> {
+                try {
+                    this.annotationId = SparkPlatform.GRAFANA_CLIENT.createAnnotation("Started profiling...", startTime);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
         this.task = this.workerPool.scheduleAtFixedRate(this, 0, this.interval, TimeUnit.MICROSECONDS);
     }
 
@@ -120,6 +132,7 @@ public class Sampler implements Runnable {
     }
 
     public void cancel() {
+        this.endTime = System.currentTimeMillis();
         this.task.cancel(false);
     }
 
@@ -140,6 +153,10 @@ public class Sampler implements Runnable {
             this.future.completeExceptionally(t);
             cancel();
         }
+    }
+
+    public int getAnnotationId() {
+        return annotationId;
     }
 
     private static final class InsertDataTask implements Runnable {

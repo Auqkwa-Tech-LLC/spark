@@ -32,7 +32,7 @@ subprojects {
     }
 
     ext {
-        pluginVersion = '1.4.2-auqkwa-0.0.1'
+        pluginVersion = '1.4.2-auqkwa-0.0.2'
         pluginDescription = 'spark is a performance profiling plugin based on sk89q\'s WarmRoast profiler'
     }
 

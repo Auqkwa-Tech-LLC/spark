@@ -36,6 +36,7 @@ import me.lucko.spark.common.command.modules.TickMonitoringModule;
 import me.lucko.spark.common.command.sender.CommandSender;
 import me.lucko.spark.common.command.tabcomplete.CompletionSupplier;
 import me.lucko.spark.common.command.tabcomplete.TabCompleter;
+import me.lucko.spark.common.grafana.GrafanaClient;
 import me.lucko.spark.common.monitor.cpu.CpuMonitor;
 import me.lucko.spark.common.monitor.memory.GarbageCollectorStatistics;
 import me.lucko.spark.common.monitor.tick.TickStatistics;
@@ -61,13 +62,15 @@ import java.util.stream.Collectors;
 public class SparkPlatform {
 
     /** The URL of the viewer frontend */
-    public static final String VIEWER_URL = System.getProperty("me.lucko.spark.viewer-url", "https://spark.lucko.me/#");
-    public static final String BYTEBIN_URL = System.getProperty("me.lucko.spark.bytebin-url", "https://bytebin.lucko.me");
+    public static final String VIEWER_URL = System.getProperty("me.lucko.spark.viewer.url", "https://spark.lucko.me/#");
+    public static final String BYTEBIN_URL = System.getProperty("me.lucko.spark.bytebin.url", "https://bytebin.lucko.me");
 
     /** The shared okhttp client */
     private static final OkHttpClient OK_HTTP_CLIENT = new OkHttpClient();
     /** The bytebin instance used by the platform */
     public static final BytebinClient BYTEBIN_CLIENT = new BytebinClient(OK_HTTP_CLIENT, BYTEBIN_URL, "spark-plugin");
+
+    public static final GrafanaClient GRAFANA_CLIENT = GrafanaClient.fromEnvironment(OK_HTTP_CLIENT);
 
     private final SparkPlugin plugin;
     private final List<CommandModule> commandModules;
