@@ -23,6 +23,7 @@ package me.lucko.spark.common;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.lucko.spark.common.activitylog.ActivityLog;
+import me.lucko.spark.common.auto.AutoSampler;
 import me.lucko.spark.common.command.Arguments;
 import me.lucko.spark.common.command.Command;
 import me.lucko.spark.common.command.CommandModule;
@@ -54,6 +55,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -79,14 +81,17 @@ public class SparkPlatform {
     private final TickHook tickHook;
     private final TickReporter tickReporter;
     private final TickStatistics tickStatistics;
+    private final AutoSampler autoSampler;
     private Map<String, GarbageCollectorStatistics> startupGcStatistics = ImmutableMap.of();
     private long serverNormalOperationStartTime;
 
     public SparkPlatform(SparkPlugin plugin) {
         this.plugin = plugin;
 
+        SamplerModule samplerModule = new SamplerModule();
+
         this.commandModules = ImmutableList.of(
-                new SamplerModule(),
+                samplerModule,
                 new HealthModule(),
                 new TickMonitoringModule(),
                 new GcMonitoringModule(),
@@ -106,6 +111,14 @@ public class SparkPlatform {
         this.tickHook = plugin.createTickHook();
         this.tickReporter = plugin.createTickReporter();
         this.tickStatistics = this.tickHook != null ? new TickStatistics() : null;
+
+        Logger logger = Logger.getLogger("Spark");
+
+        if (Boolean.parseBoolean(System.getProperty("me.lucko.spark.autoSampler.enabled"))) {
+            autoSampler = new AutoSampler(this, samplerModule, tickStatistics, logger, tickHook);
+        } else {
+            autoSampler = null;
+        }
     }
 
     public void enable() {
@@ -127,6 +140,10 @@ public class SparkPlatform {
     }
 
     public void disable() {
+        if (autoSampler != null) {
+            autoSampler.close();
+        }
+
         if (this.tickHook != null) {
             this.tickHook.close();
         }

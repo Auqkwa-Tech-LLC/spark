@@ -266,7 +266,7 @@ public class SamplerModule implements CommandModule {
         );
     }
 
-    private void handleUpload(SparkPlatform platform, CommandResponseHandler resp, Sampler sampler, ThreadNodeOrder threadOrder, String comment, MergeMode mergeMode) {
+    public void handleUpload(SparkPlatform platform, CommandResponseHandler resp, Sampler sampler, ThreadNodeOrder threadOrder, String comment, MergeMode mergeMode) {
         platform.getPlugin().executeAsync(() -> {
             byte[] output = sampler.formCompressedDataPayload(platform.getPlugin().getPlatformInfo(), resp.sender(), threadOrder, comment, mergeMode);
             try {
@@ -290,5 +290,13 @@ public class SamplerModule implements CommandModule {
                 e.printStackTrace();
             }
         });
+    }
+
+    public Sampler getActiveSampler() {
+        return activeSampler;
+    }
+
+    public void setActiveSampler(Sampler activeSampler) {
+        this.activeSampler = activeSampler;
     }
 }

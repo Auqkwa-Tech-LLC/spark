@@ -42,11 +42,14 @@ public class BukkitSparkPlugin extends JavaPlugin implements SparkPlugin {
 
     private CommandExecutor tpsCommand = null;
     private SparkPlatform platform;
+    private Thread serverThread;
 
     @Override
     public void onEnable() {
         this.platform = new SparkPlatform(this);
         this.platform.enable();
+
+        this.serverThread = Thread.currentThread();
 
         // override Spigot's TPS command with our own.
         if (getConfig().getBoolean("override-tps-command", true)) {
@@ -127,7 +130,7 @@ public class BukkitSparkPlugin extends JavaPlugin implements SparkPlugin {
 
     @Override
     public ThreadDumper getDefaultThreadDumper() {
-        return new ThreadDumper.Specific(new long[]{Thread.currentThread().getId()});
+        return new ThreadDumper.Specific(new long[]{serverThread.getId()});
     }
 
     @Override
