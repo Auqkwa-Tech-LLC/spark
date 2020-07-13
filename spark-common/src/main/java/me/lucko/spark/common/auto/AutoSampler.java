@@ -21,7 +21,7 @@ public class AutoSampler implements AutoCloseable {
     public static final int CONSECUTIVE_STABLE_TICKS_THRESHOLD = 2;
     private static final double SAMPLING_INTERVAL_MILLISECONDS = 4;
     public static final int LATE_TICK_MILLISECONDS = 200;
-    public static final double AVG_TPS_TRESHOLD = 19.5;
+    public static final double AVG_TPS_THRESHOLD = 19.5;
     public static final int BACKOFF_SECONDS = 10;
 
     private final SparkPlatform sparkPlatform;
@@ -40,7 +40,7 @@ public class AutoSampler implements AutoCloseable {
     private long lastTickMilliseconds = 0;
 
     enum StartReason {
-        AVG_TPS("Starting profiler because average tps for the past 5 seconds < " + AVG_TPS_TRESHOLD),
+        AVG_TPS("Starting profiler because average tps for the past 5 seconds < " + AVG_TPS_THRESHOLD),
         LATE_TICK("Starting profiler because tick took more than " + LATE_TICK_MILLISECONDS + "ms");
 
         private final String message;
@@ -100,14 +100,14 @@ public class AutoSampler implements AutoCloseable {
             }
         }
 
-        if (isProfiling() && consecutiveStableTicks == CONSECUTIVE_STABLE_TICKS_THRESHOLD && tickStatistics.tps5Sec() > AVG_TPS_TRESHOLD) {
-            logger.info("Stopping profiler because past " + CONSECUTIVE_STABLE_TICKS_THRESHOLD + " were under " + LATE_TICK_MILLISECONDS + "ms and average tps for the past 5 seconds > " + AVG_TPS_TRESHOLD);
+        if (isProfiling() && consecutiveStableTicks == CONSECUTIVE_STABLE_TICKS_THRESHOLD && tickStatistics.tps5Sec() > AVG_TPS_THRESHOLD) {
+            logger.info("Stopping profiler because past " + CONSECUTIVE_STABLE_TICKS_THRESHOLD + " were under " + LATE_TICK_MILLISECONDS + "ms and average tps for the past 5 seconds > " + AVG_TPS_THRESHOLD);
             stopProfiling();
         }
 
         lateTickHandler = scheduler.schedule(this::handleLateTick, LATE_TICK_MILLISECONDS, TimeUnit.MILLISECONDS);
 
-        if (tickStatistics.tps5Sec() < AVG_TPS_TRESHOLD) {
+        if (tickStatistics.tps5Sec() < AVG_TPS_THRESHOLD) {
             startProfiling(AVG_TPS);
         }
 
