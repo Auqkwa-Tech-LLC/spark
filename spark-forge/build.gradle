@@ -14,22 +14,8 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200125-1.15.1'
+    mappings channel: 'snapshot', version: '20200916-1.16.2'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-}
-
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        expand (
-                'pluginVersion': project.pluginVersion,
-                'pluginDescription': project.pluginDescription
-        )
-        include 'META-INF/mods.toml'
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
 }
 
 configurations {
@@ -38,8 +24,22 @@ configurations {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.2-31.0.1'
+    minecraft 'net.minecraftforge:forge:1.16.4-35.0.3'
     shade project(':spark-common')
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+        expand (
+                'pluginVersion': project.pluginVersion,
+                'pluginDescription': project.pluginDescription
+        )
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
+    }
 }
 
 shadowJar {
@@ -48,7 +48,7 @@ shadowJar {
 
     relocate 'okio', 'me.lucko.spark.lib.okio'
     relocate 'okhttp3', 'me.lucko.spark.lib.okhttp3'
-    relocate 'net.kyori.text', 'me.lucko.spark.lib.text'
+    relocate 'net.kyori.adventure', 'me.lucko.spark.lib.adventure'
     relocate 'org.tukaani.xz', 'me.lucko.spark.lib.xz'
     relocate 'com.google.protobuf', 'me.lucko.spark.lib.protobuf'
     relocate 'org.objectweb.asm', 'me.lucko.spark.lib.asm'
